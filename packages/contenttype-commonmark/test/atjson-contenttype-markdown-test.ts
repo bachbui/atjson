@@ -141,11 +141,11 @@ describe('markdown -> atjson', function () {
     let parser = new Parser(markdown);
     let atjson = parser.parse();
 
-    expect(atjson.content).toBe('\n');
+    expect(atjson.content).toBe('\uFFFC\n');
 
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 0, attributes: {} },
-      { type: 'image', start: 0, end: 0, attributes: { src: '/url', title: 'title', alt: 'foo' } }
+      { type: 'paragraph', start: 0, end: 1, attributes: {} },
+      { type: 'image', start: 0, end: 1, attributes: { src: '/url', title: 'title', alt: 'foo' } }
     ];
 
     expect(atjson.annotations).toEqual(expectedAnnotations);
@@ -180,6 +180,22 @@ describe('markdown -> atjson', function () {
     let expectedAnnotations = [
       { type: 'paragraph', start: 0, end: atjson.content.length - 1, attributes: {} },
       { type: 'code', start: 0, end: 0, attributes: {} }
+    ];
+
+    expect(atjson.annotations).toEqual(expectedAnnotations);
+  });
+
+  it('edge-case images from commonmark tests', function () {
+    let markdown = '![foo]\n[]\n\n[foo]: /url "title"\n';
+
+    let parser = new Parser(markdown);
+    let atjson = parser.parse();
+
+    expect(atjson.content).toBe('\uFFFC\n[]\n');
+
+    let expectedAnnotations = [
+      { type: 'paragraph', start: 0, end: atjson.content.length - 1, attributes: {} },
+      { type: 'image', start: 0, end: 1, attributes: { src: '/url', alt: 'foo', title: 'title' } }
     ];
 
     expect(atjson.annotations).toEqual(expectedAnnotations);

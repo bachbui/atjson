@@ -65,6 +65,14 @@ function paragraph(...children: node[]) {
   };
 }
 
+function image(attributes: object, ...children: node[]) {
+  return {
+    type: 'image',
+    attributes: attributes,
+    children
+  };
+}
+
 describe('@atjson/hir', function () {
 
   /**
@@ -264,5 +272,23 @@ describe('@atjson/hir', function () {
 
       expect(new HIR(zerolength).toJSON()).toEqual(expected);
     });
-});
+
+    // n.b. this case is somewhat ambiguous – the image should be explicitly
+    // assigned to an object replacement character in the text
+    it('regression test from commonmark Images tests', function () {
+      let atjson = new AtJSON({
+        content: '\uFFFC\n[]\n',
+        annotations: [
+          { type: 'paragraph', start: 0, end: 5 }
+          { type: 'image', start: 0, end: 1, attributes: { src: '/url', alt: 'foo', title: 'title' } },
+        ]
+      });
+
+      let expected = root(
+        paragraph(image({ alt: 'foo', src: '/url', title: 'title' }), '\n[]\n')
+      );
+
+      expect(new HIR(atjson).toJSON()).toEqual(expected);
+    });
+  });
 });
