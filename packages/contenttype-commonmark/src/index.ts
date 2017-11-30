@@ -15,23 +15,30 @@ const TAG_MAP: { [tagName: string]: string } = {
 
 const HANDLERS = {
   'hardbreak': (state, token) => {
+    state.content += '\n';
     state.annotations.push({
       type: token.tag,
-      start: state.content.length,
+      start: state.content.length - 1,
       end: state.content.length,
       attributes: {}
     });
-    state.content += '\n';
   },
 
   'softbreak': (state, token) => {
     state.content += '\n';
+    state.annotations.push({
+      type: 'soft-break',
+      start: state.content.length - 1,
+      end: state.content.length,
+      attributes: {}
+    });
   },
 
   'hr': (state, token) => {
+    state.content += '\uFFFC';
     state.annotations.push({
       type: token.tag,
-      start: state.content.length,
+      start: state.content.length - 1,
       end: state.content.length,
       attributes: {}
     });
@@ -132,9 +139,10 @@ const HANDLERS = {
 
     attributes.alt = fetchText(token);
 
+    state.content += '\uFFFC';
     state.annotations.push({
       type: token.tag,
-      start: state.content.length,
+      start: state.content.length - 1,
       end: state.content.length,
       attributes
     });
