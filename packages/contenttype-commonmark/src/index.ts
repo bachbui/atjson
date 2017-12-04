@@ -160,11 +160,9 @@ export class Parser {
 
   private stack: TempAnnotation[];
 
-  constructor(markdown: string) {
-    this.markdown = markdown;
-  }
+  parse(markdown: string): AtJSON {
 
-  parse(): AtJSON {
+    this.markdown = markdown;
     this.reset();
 
     let tokens = parser.parse(this.markdown, {});

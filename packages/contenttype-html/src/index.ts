@@ -1,4 +1,4 @@
-import { Annotation } from '@atjson/core';
+import { AtJSON, Annotation } from '@atjson/core';
 
 import * as parse5 from 'parse5';
 
@@ -25,14 +25,14 @@ export class Parser {
 
   content: string;
 
-  constructor(content: string) {
-    this.content = content;
-  }
-
-  parse(): Annotation[] {
-    let tree = parse5.parseFragment(this.content, {locationInfo: true});
-    if (isParentNode(tree)) return this.walkChildren(tree.childNodes);
-    throw new Error('Invalid return from parser. Failing.');
+  parse(content: string): AtJSON {
+    let tree = parse5.parseFragment(content, {locationInfo: true});
+    if (isParentNode(tree)) {
+      let annotations = this.walkChildren(tree.childNodes);
+      return new AtJSON({contentType: 'text/html', content, annotations});
+    } else {
+      throw new Error('Invalid return from parser. Failing.');
+    }
   }
 
   newAnnotation(type: string, location: parse5.MarkupData.Location, extra?: {}) {

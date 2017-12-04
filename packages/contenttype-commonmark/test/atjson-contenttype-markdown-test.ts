@@ -9,8 +9,8 @@ describe('markdown -> atjson', function () {
       { type: 'strong', start: 6, end: 11, attributes: {} }
     ];
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
@@ -23,8 +23,8 @@ describe('markdown -> atjson', function () {
       { type: 'paragraph', start: 14, end: 26, attributes: {} }
     ];
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
     expect(atjson.content).toBe('12345\n678\n910\neleventwelve\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
@@ -36,8 +36,8 @@ describe('markdown -> atjson', function () {
       { type: 'strong', start: 4, end: 5, attributes: {} }
     ];
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('foo _\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
@@ -51,8 +51,8 @@ describe('markdown -> atjson', function () {
       { type: 'code', start: 0, end: 3, attributes: {} }
     ];
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('a b\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
@@ -64,8 +64,8 @@ describe('markdown -> atjson', function () {
       { type: 'paragraph', start: 0, end: 9, attributes: {} },
       { type: 'code', start: 0, end: 9, attributes: {} }
     ];
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
     expect(atjson.content).toBe('foo ` bar\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
@@ -79,8 +79,8 @@ describe('markdown -> atjson', function () {
       { type: 'a', start: 10, end: 14, attributes: { href: '/url', title: 'title' } }
     ];
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
     expect(atjson.content).toBe('link\nlink\nlink\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
@@ -89,8 +89,8 @@ describe('markdown -> atjson', function () {
 
     let markdown = '1.  A paragraph\n    with two lines.\n\n        indented code\n\n    > A block quote.';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     let c = atjson.content;
     let expectedAnnotations = [
@@ -110,8 +110,8 @@ describe('markdown -> atjson', function () {
   it('html blocks', function () {
     let markdown = '<DIV CLASS="foo">\n<p><em>Markdown</em></p>\n</DIV>';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('<DIV CLASS="foo">\n<p><em>Markdown</em></p>\n</DIV>\n');
     expect(atjson.annotations).toEqual([{ type: 'html', start: 0, end: 49, attributes: {} }]);
@@ -120,8 +120,8 @@ describe('markdown -> atjson', function () {
   it('tabs', function () {
     let markdown = '\tfoo\tbaz\t\tbim';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('foo\tbaz\t\tbim\n');
   });
@@ -129,8 +129,8 @@ describe('markdown -> atjson', function () {
   it('hr', function () {
     let markdown = '*\t*\t*\t\n';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('\n');
   });
@@ -138,8 +138,8 @@ describe('markdown -> atjson', function () {
   it('simple images', function () {
     let markdown = '![foo](/url "title")';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('\n');
 
@@ -154,8 +154,8 @@ describe('markdown -> atjson', function () {
   it('Does not add extra paragraphs within list items', function () {
     let markdown = '- foo\n-\n- bar\n';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('\nfoo\n\nbar\n\n');
 
@@ -172,8 +172,8 @@ describe('markdown -> atjson', function () {
   it('fenced code blocks2', function () {
     let markdown = '``` ```\naaa\n';
 
-    let parser = new Parser(markdown);
-    let atjson = parser.parse();
+    let parser = new Parser();
+    let atjson = parser.parse(markdown);
 
     expect(atjson.content).toBe('\naaa\n');
 

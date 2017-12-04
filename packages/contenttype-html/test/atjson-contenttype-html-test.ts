@@ -6,14 +6,8 @@ describe('@atjson/contenttype-html', function () {
   it('pre-code', function () {
     let html = '<pre><code>this <b>is</b> a test</code></pre>';
 
-    let parser = new Parser(html);
-    let parsedHtml = parser.parse();
-
-    let htmlAtJSON = new AtJSON({
-      content: html,
-      contentType: 'text/html',
-      annotations: parsedHtml
-    });
+    let parser = new Parser();
+    let htmlAtJSON = parser.parse(html);
 
     let hir = new HIR(htmlAtJSON).toJSON();
 
@@ -59,14 +53,8 @@ describe('@atjson/contenttype-html', function () {
 
   it('<a href="https://example.com">example</a>', function () {
     let html = '<a href="https://example.com">example</a>';
-    let parser = new Parser(html);
-    let parsedHtml = parser.parse();
-
-    let htmlAtJSON = new AtJSON({
-      content: html,
-      contentType: 'text/html',
-      annotations: parsedHtml
-    });
+    let parser = new Parser();
+    let htmlAtJSON = parser.parse(html);
 
     let hir = new HIR(htmlAtJSON).toJSON();
     expect(hir).toEqual({
@@ -84,14 +72,8 @@ describe('@atjson/contenttype-html', function () {
 
   it('<img src="https://example.com/test.png" /> ', function () {
     let html = '<img src="https://example.com/test.png" /> ';
-    let parser = new Parser(html);
-    let parsedHtml = parser.parse();
-
-    let htmlAtJSON = new AtJSON({
-      content: html,
-      contentType: 'text/html',
-      annotations: parsedHtml
-    });
+    let parser = new Parser();
+    let htmlAtJSON = parser.parse(html);
 
     let hir = new HIR(htmlAtJSON).toJSON();
     expect(hir).toEqual({
@@ -109,14 +91,8 @@ describe('@atjson/contenttype-html', function () {
 
   it('<h2></h2>\n<h1></h1>\n<h3></h3>', function () {
     let html = '<h2></h2>\n<h1></h1>\n<h3></h3>';
-    let parser = new Parser(html);
-    let parsedHtml = parser.parse();
-
-    let htmlAtJSON = new AtJSON({
-      content: html,
-      contentType: 'text/html',
-      annotations: parsedHtml
-    });
+    let parser = new Parser();
+    let htmlAtJSON = parser.parse(html);
 
     let hir = new HIR(htmlAtJSON).toJSON();
     expect(hir).toEqual({
@@ -140,14 +116,8 @@ describe('@atjson/contenttype-html', function () {
 
   it('<p><img src="/url" alt="Foo" title="title" /></p>', () => {
     let html = '<p><img src="/url" alt="Foo" title="title" /></p>';
-    let parser = new Parser(html);
-    let parsedHtml = parser.parse();
-
-    let htmlAtJSON = new AtJSON({
-      content: html,
-      contentType: 'text/html',
-      annotations: parsedHtml
-    });
+    let parser = new Parser();
+    let htmlAtJSON = parser.parse(html);
 
     let hir = new HIR(htmlAtJSON).toJSON();
     expect(hir).toEqual({
@@ -171,14 +141,8 @@ describe('@atjson/contenttype-html', function () {
 
   it('<p>**<a href="**"></p> CURRENT', () => {
     let html = '<p>**<a href="**"></p>';
-    let parser = new Parser(html);
-    let parsedHtml = parser.parse();
-
-    let htmlAtJSON = new AtJSON({
-      content: html,
-      contentType: 'text/html',
-      annotations: parsedHtml
-    });
+    let parser = new Parser();
+    let htmlAtJSON = parser.parse(html);
 
     let hir = new HIR(htmlAtJSON).toJSON();
     expect(hir).toEqual({

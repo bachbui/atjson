@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { Parser as HTMLParser } from '@atjson/contenttype-html';
-import { Parser } from '@atjson/contenttype-commonmark';
+import { Parser as MDParser} from '@atjson/contenttype-commonmark';
 import { AtJSON } from '@atjson/core';
 import { HIR } from '@atjson/hir';
 import process from 'process';
@@ -19,9 +19,9 @@ const augmentEmbeddedHTML = (mdAtJSON) => {
   let embeddedHTMLAnnotations = mdAtJSON.annotations
     .filter(a => a.type === 'html' || a.type === '')
     .map(a => {
-      let p = new HTMLParser(mdAtJSON.content.substr(a.start, a.end));
-      let h = p.parse();
-      return h.map(v => {
+      let p = new HTMLParser();
+      let h = p.parse(mdAtJSON.content.substr(a.start, a.end));
+      return h.annotations.map(v => {
           v.start += a.start;
           v.end += a.start;
           return v;
@@ -54,11 +54,11 @@ Object.keys(testModules).forEach(moduleName => {
         test.markdown = test.markdown.replace(/→/g, '\t');
         test.html = test.html.replace(/→/g, '\t');
 
-        let parser = new Parser(test.markdown);
-        let htmlParser = new HTMLParser(test.html);
+        let mdParser = new MDParser();
+        let htmlParser = new HTMLParser();
 
-        let parsedMarkdown = parser.parse();
-        let parsedHtml = htmlParser.parse();
+        let parsedMarkdown = mdParser.parse(test.markdown);
+        let parsedHtml = htmlParser.parse(test.html);
 
         let mdAtJSON = new AtJSON({
           content: parsedMarkdown.content,
@@ -69,9 +69,9 @@ Object.keys(testModules).forEach(moduleName => {
         mdAtJSON = augmentEmbeddedHTML(mdAtJSON);
 
         let htmlAtJSON = new AtJSON({
-          content: test.html,
+          content: parsedHtml.content,
           contentType: 'text/html',
-          annotations: parsedHtml
+          annotations: parsedHtml.annotations
         });
 
         let markdownHIR = new HIR(mdAtJSON).toJSON();
