@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { Parser as HTMLParser } from '@atjson/contenttype-html';
-import { Parser } from '@atjson/contenttype-commonmark';
+import { Parser } from '@atjson/contenttype-commonmark2';
 import { AtJSON } from '@atjson/core';
 import { HIR } from '@atjson/hir';
 import process from 'process';
@@ -22,8 +22,8 @@ Object.keys(testModules).forEach(moduleName => {
   describe(moduleName, function() {
     moduleTests.forEach((test: any): void => {
       it('\n\n--- markdown --->' + test.markdown + '<---\n--- html --->' + test.html + '<---\n\n', function () {
-        test.markdown = test.markdown.replace(/→/g, '\t');
-        test.html = test.html.replace(/→/g, '\t');
+        //test.markdown = test.markdown.replace(/→/g, '\t');
+        //test.html = test.html.replace(/→/g, '\t');
 
         let parser = new Parser();
         let htmlParser = new HTMLParser(test.html);

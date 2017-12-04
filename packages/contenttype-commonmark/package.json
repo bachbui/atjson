@@ -1,5 +1,5 @@
 {
-  "name": "@atjson/contenttype-commonmark",
+  "name": "@atjson/contenttype-commonmark2",
   "version": "0.5.3",
   "description": "A brand new TypeScript library.",
   "main": "dist/commonjs/index.js",

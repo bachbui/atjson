@@ -1,12 +1,18 @@
-import { Parser } from '@atjson/contenttype-commonmark';
+import { Parser } from '@atjson/contenttype-commonmark2';
 
 describe('markdown -> atjson', function () {
   it('Correctly obtains annotations for simple inline elements', function () {
     let markdown = '*hello* __world__';
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 11, attributes: {} },
-      { type: 'em', start: 0, end: 5, attributes: {} },
-      { type: 'strong', start: 6, end: 11, attributes: {} }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 40, end: 44, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 40, attributes: {} },
+      { type: 'parse-token', start: 3, end: 7, attributes: {}, htmlType: 'em' },
+      { type: 'parse-token', start: 12, end: 17, attributes: {}, htmlType: 'em' },
+      { type: 'em', start: 7, end: 12, attributes: {} },
+      { type: 'parse-token', start: 18, end: 26, attributes: {}, htmlType: 'strong' },
+      { type: 'parse-token', start: 31, end: 40, attributes: {}, htmlType: 'strong' },
+      { type: 'strong', start: 26, end: 31, attributes: {} }
     ];
 
     let parser = new Parser();
@@ -18,28 +24,38 @@ describe('markdown -> atjson', function () {
     let markdown = '12345\n\n\n678\n910\n\neleventwelve\n\n';
 
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 5, attributes: {} },
-      { type: 'paragraph', start: 6, end: 13, attributes: {} },
-      { type: 'paragraph', start: 14, end: 26, attributes: {} }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 8, end: 12, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 8, attributes: {} },
+      { type: 'parse-token', start: 13, end: 16, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 23, end: 27, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 16, end: 23, attributes: {} },
+      { type: 'parse-token', start: 28, end: 31, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 43, end: 47, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 31, end: 43, attributes: {} }
     ];
 
     let parser = new Parser();
     let atjson = parser.parse(markdown);
-    expect(atjson.content).toBe('12345\n678\n910\neleventwelve\n');
+    expect(atjson.content).toBe('<p>12345</p>\n<p>678\n910</p>\n<p>eleventwelve</p>\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
   it('Correctly handles escape sequences', function () {
     let markdown = 'foo __\\___';
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 5, attributes: {} },
-      { type: 'strong', start: 4, end: 5, attributes: {} }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 25, end: 29, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 25, attributes: {} },
+      { type: 'parse-token', start: 7, end: 15, attributes: {}, htmlType: 'strong' },
+      { type: 'parse-token', start: 16, end: 25, attributes: {}, htmlType: 'strong' },
+      { type: 'strong', start: 15, end: 16, attributes: {} }
     ];
 
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('foo _\n');
+    expect(atjson.content).toBe('<p>foo <strong>_</strong></p>\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
@@ -47,41 +63,57 @@ describe('markdown -> atjson', function () {
     let markdown = '`a b`';
 
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 3, attributes: {} },
-      { type: 'code', start: 0, end: 3, attributes: {} }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 19, end: 23, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 19, attributes: {} },
+      { type: 'parse-token', start: 3, end: 9, attributes: {}, htmlType: 'code' },
+      { type: 'parse-token', start: 12, end: 19, attributes: {}, htmlType: 'code' },
+      { type: 'code', start: 9, end: 12, attributes: {} }
     ];
 
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('a b\n');
+    expect(atjson.content).toBe('<p><code>a b</code></p>\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
   it('`` foo ` bar  ``', function () {
     let markdown = '`` foo ` bar  ``';
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 9, attributes: {} },
-      { type: 'code', start: 0, end: 9, attributes: {} }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 25, end: 29, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 25, attributes: {} },
+      { type: 'parse-token', start: 3, end: 9, attributes: {}, htmlType: 'code' },
+      { type: 'parse-token', start: 18, end: 25, attributes: {}, htmlType: 'code' },
+      { type: 'code', start: 9, end: 18, attributes: {} }
     ];
     let parser = new Parser();
     let atjson = parser.parse(markdown);
-    expect(atjson.content).toBe('foo ` bar\n');
+    expect(atjson.content).toBe('<p><code>foo ` bar</code></p>\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
   it('links', function () {
     let markdown = '[link](/url "title")\n[link](/url \'title\')\n[link](/url (title))';
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 14, attributes: {} },
-      { type: 'a', start: 0, end: 4, attributes: { href: '/url', title: 'title' } },
-      { type: 'a', start: 5, end: 9, attributes: { href: '/url', title: 'title' } },
-      { type: 'a', start: 10, end: 14, attributes: { href: '/url', title: 'title' } }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 116, end: 120, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 116, attributes: {} },
+      { type: 'parse-token', start: 3, end: 32, attributes: {}, htmlType: 'a' },
+      { type: 'parse-token', start: 36, end: 40, attributes: {}, htmlType: 'a' },
+      { type: 'a', start: 32, end: 36, attributes: { href: '/url', title: 'title' } },
+      { type: 'parse-token', start: 41, end: 70, attributes: {}, htmlType: 'a' },
+      { type: 'parse-token', start: 74, end: 78, attributes: {}, htmlType: 'a' },
+      { type: 'a', start: 70, end: 74, attributes: { href: '/url', title: 'title' } },
+      { type: 'parse-token', start: 79, end: 108, attributes: {}, htmlType: 'a' },
+      { type: 'parse-token', start: 112, end: 116, attributes: {}, htmlType: 'a' },
+      { type: 'a', start: 108, end: 112, attributes: { href: '/url', title: 'title' } }
     ];
 
     let parser = new Parser();
     let atjson = parser.parse(markdown);
-    expect(atjson.content).toBe('link\nlink\nlink\n');
+    expect(atjson.content).toBe('<p><a href="/url" title="title">link</a>\n<a href="/url" title="title">link</a>\n<a href="/url" title="title">link</a></p>\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
@@ -103,12 +135,12 @@ describe('markdown -> atjson', function () {
       { type: 'paragraph', start: c.indexOf('A block'), end: c.indexOf('quote.') + 6, attributes: {} }
     ];
 
-    expect(atjson.content.replace(/\n/g, 'Z')).toBe('\n\nA paragraph\nwith two lines.\nindented code\n\n\nA block quote.\n\n\n\n'.replace(/\n/g, 'Z'));
+    expect(atjson.content).toBe('<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>\n');
     expect(atjson.annotations).toEqual(expectedAnnotations);
   });
 
   it('html blocks', function () {
-    let markdown = '<DIV CLASS="foo">\n<p><em>Markdown</em></p>\n</DIV>';
+    let markdown = '<DIV CLASS="foo">\n<p><em>Markdown</em></p>\n</DIV>\n';
 
     let parser = new Parser();
     let atjson = parser.parse(markdown);
@@ -123,7 +155,7 @@ describe('markdown -> atjson', function () {
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('foo\tbaz\t\tbim\n');
+    expect(atjson.content).toBe('<pre><code>foo\tbaz\t\tbim</code></pre>\n');
   });
 
   it('hr', function () {
@@ -132,7 +164,7 @@ describe('markdown -> atjson', function () {
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('\n');
+    expect(atjson.content).toBe('<hr />\n');
   });
 
   it('simple images', function () {
@@ -141,11 +173,14 @@ describe('markdown -> atjson', function () {
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('\n');
+    expect(atjson.content).toBe('<p><img src="/url" alt="foo" title="title" /></p>\n');
 
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: 0, attributes: {} },
-      { type: 'image', start: 0, end: 0, attributes: { src: '/url', title: 'title', alt: 'foo' } }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 45, end: 49, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: 45, attributes: {} },
+      { type: 'parse-token', start: 3, end: 45, attributes: {}, htmlType: 'image' }
+      { type: 'image', start: 3, end: 45, attributes: { src: '/url', title: 'title', alt: 'foo' } }
     ];
 
     expect(atjson.annotations).toEqual(expectedAnnotations);
@@ -157,13 +192,21 @@ describe('markdown -> atjson', function () {
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('\nfoo\n\nbar\n\n');
+    expect(atjson.content).toBe('<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>\n');
 
     let expectedAnnotations = [
-      { type: 'unordered-list', start: 0, end: atjson.content.length - 1, attributes: {} },
-      { type: 'list-item', start: 1, end: 4, attributes: {} },
-      { type: 'list-item', start: 5, end: 5, attributes: {} },
-      { type: 'list-item', start: 6, end: atjson.content.length - 2, attributes: {} }
+      { type: 'parse-token', start: 0, end: 4, attributes: {}, htmlType: 'unordered-list' },
+      { type: 'parse-token', start: 41, end: 46, attributes: {}, htmlType: 'unordered-list' },
+      { type: 'unordered-list', start: 4, end: atjson.content.length - 6, attributes: {} },
+      { type: 'parse-token', start: 5, end: 9, attributes: {}, htmlType: 'list-item' },
+      { type: 'parse-token', start: 12, end: 17, attributes: {}, htmlType: 'list-item' },
+      { type: 'list-item', start: 9, end: 12, attributes: {} },
+      { type: 'parse-token', start: 18, end: 22, attributes: {}, htmlType: 'list-item' },
+      { type: 'parse-token', start: 22, end: 27, attributes: {}, htmlType: 'list-item' },
+      { type: 'list-item', start: 22, end: 22, attributes: {} },
+      { type: 'parse-token', start: 28, end: 32, attributes: {}, htmlType: 'list-item' },
+      { type: 'parse-token', start: 35, end: 40, attributes: {}, htmlType: 'list-item' },
+      { type: 'list-item', start: 32, end: 35, attributes: {} }
     ];
 
     expect(atjson.annotations).toEqual(expectedAnnotations);
@@ -175,11 +218,15 @@ describe('markdown -> atjson', function () {
     let parser = new Parser();
     let atjson = parser.parse(markdown);
 
-    expect(atjson.content).toBe('\naaa\n');
+    expect(atjson.content).toBe('<p><code></code>\naaa</p>\n');
 
     let expectedAnnotations = [
-      { type: 'paragraph', start: 0, end: atjson.content.length - 1, attributes: {} },
-      { type: 'code', start: 0, end: 0, attributes: {} }
+      { type: 'parse-token', start: 0, end: 3, attributes: {}, htmlType: 'paragraph' },
+      { type: 'parse-token', start: 20, end: 24, attributes: {}, htmlType: 'paragraph' },
+      { type: 'paragraph', start: 3, end: atjson.content.length - 5, attributes: {} },
+      { type: 'parse-token', start: 3, end: 9, attributes: {}, htmlType: 'code' },
+      { type: 'parse-token', start: 9, end: 16, attributes: {}, htmlType: 'code' },
+      { type: 'code', start: 9, end: 9, attributes: {} }
     ];
 
     expect(atjson.annotations).toEqual(expectedAnnotations);
